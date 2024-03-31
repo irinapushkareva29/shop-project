@@ -7,3 +7,9 @@ export interface IProductEditData {
     commentsToRemove: string | string[];
     imagesToRemove: string | string[];
 }
+
+declare module 'express-session' {
+    export interface SessionData {
+      username?: string
+    }
+  }

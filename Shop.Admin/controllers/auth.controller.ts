@@ -1,9 +1,26 @@
 import { throwServerError } from "./helper";
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { IAuthRequisites } from "@Shared/types";
 import { verifyRequisites } from "../models/auth.model";
 
 export const authRouter = Router();
+
+export const validateSession = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    if (req.path.includes("/login") || req.path.includes("/authenticate")) {
+        next();
+        return;
+    }
+
+    if (req.session?.username) {
+        next();
+    } else {
+        res.redirect(`/${process.env.ADMIN_PATH}/auth/login`);
+    }
+}
 
 authRouter.get("/login", async (req: Request, res: Response) => {
     try {
@@ -21,6 +38,7 @@ authRouter.post("/authenticate", async (
         const verified = await verifyRequisites(req.body);
 
         if (verified) {
+            console.log(req.body.username); 
             res.redirect(`/${process.env.ADMIN_PATH}`)
         } else {
             res.redirect(`/${process.env.ADMIN_PATH}/auth/login`);
@@ -28,4 +46,4 @@ authRouter.post("/authenticate", async (
     } catch (e) {
         throwServerError(res, e);
     }
-});
+}); 

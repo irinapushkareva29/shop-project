@@ -8,7 +8,6 @@ export const productsRouter = Router();
 
 productsRouter.get('/', async (req: Request, res: Response) => {
     try {
-        console.log('req', req.session);
         const products = await getProducts();
         res.render("products", {
             items: products,
